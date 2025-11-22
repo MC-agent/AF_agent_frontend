@@ -1,0 +1,47 @@
+.messages{
+
+    left : 'align';
+};
+
+.msg_bot{
+
+    left: 'align';
+}
+
+.msg_user{
+
+    right: 'align';
+}
+
+
+
+.inputBar {
+  display: flex;
+  gap: 10px;
+  padding: 12px;
+  border-top: 1px solid #575454;
+  background: #837d7d;
+}
+
+
+.wrapper {
+  position: relative;
+  height: 100vh; // 예시 (필요한 높이)
+}
+
+.textarea {
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid #c32a2a;
+  font-size: 14px;
+  outline: none;
+  position: absolute;
+  bottom: 0;     // 화면 or 부모의 맨 아래
+  width: 30%;
+  resize: none;
+
+  &:focus {
+    border-color: #747b86;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+  }
+}
