@@ -5,7 +5,9 @@
 
 .msg_bot{
 
-    left: 'align';
+  position: absolute;
+  left: 20%;                
+  transform: translateX(-20%); 
 }
 
 .msg_user{
@@ -19,7 +21,7 @@
   display: flex;
   gap: 10px;
   padding: 12px;
-  border-top: 1px solid #575454;
+  border-top: 1px solid #030303;
   background: #837d7d;
 }
 
@@ -32,12 +34,16 @@
 .textarea {
   padding: 10px;
   border-radius: 12px;
-  border: 1px solid #c32a2a;
+  border: 1px solid #965f5f;
   font-size: 14px;
   outline: none;
+
   position: absolute;
-  bottom: 0;     // 화면 or 부모의 맨 아래
-  width: 30%;
+  bottom: 0;
+  left: 50%;                
+  transform: translateX(-50%); 
+
+  width: 70%;
   resize: none;
 
   &:focus {
