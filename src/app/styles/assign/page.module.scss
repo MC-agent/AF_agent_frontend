@@ -1,0 +1,101 @@
+/* signup.module.scss */
+
+.container {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+
+  /* 트렌디한 배경 */
+  background:
+    radial-gradient(900px circle at 20% 20%, rgba(99, 102, 241, 0.22), transparent 50%),
+    radial-gradient(800px circle at 80% 30%, rgba(34, 197, 94, 0.18), transparent 55%),
+    linear-gradient(180deg, #0b1220 0%, #070a14 100%);
+  color: #e8eefc;
+}
+
+.container form {
+  width: min(520px, 100%);
+  padding: 28px;
+  border-radius: 18px;
+
+  /* glassmorphism card */
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(12px);
+
+  display: grid;
+  gap: 16px;
+}
+
+/* 각 항목 공통 스타일 (username/password/repassword/email) */
+.username,
+.password,
+.repassword,
+.email {
+  display: grid;
+  gap: 8px;
+}
+
+.username label,
+.password label,
+.repassword label,
+.email label {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(232, 238, 252, 0.78);
+  letter-spacing: -0.01em;
+}
+
+/* input 스타일 */
+.username input,
+.password input,
+.repassword input,
+.email input {
+  width: 100%;
+  height: 46px;
+  padding: 0 14px;
+  border-radius: 12px;
+
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #e8eefc;
+  outline: none;
+
+  font-size: 14px;
+  transition: all 160ms ease;
+}
+
+.username input::placeholder,
+.password input::placeholder,
+.repassword input::placeholder,
+.email input::placeholder {
+  color: rgba(232, 238, 252, 0.42);
+}
+
+/* focus 이쁘게 */
+.username input:focus,
+.password input:focus,
+.repassword input:focus,
+.email input:focus {
+  background: rgba(255, 255, 255, 0.10);
+  border-color: rgba(99, 102, 241, 0.85);
+  box-shadow: 0 0 0 5px rgba(99, 102, 241, 0.18);
+}
+
+/* hover subtle */
+.username input:hover,
+.password input:hover,
+.repassword input:hover,
+.email input:hover {
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+/* 모바일 최적화 */
+@media (max-width: 480px) {
+  .container form {
+    padding: 20px;
+    border-radius: 16px;
+  }
+}

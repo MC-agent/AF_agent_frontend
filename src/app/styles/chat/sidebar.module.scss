@@ -1,0 +1,159 @@
+/* sidebar.module.scss */
+
+/* 사이드바 전체를 감싸는 wrapper */
+.wrapper {
+  position: relative;
+  width: 250px;
+}
+
+/* 토글 버튼 */
+.toggleButton {
+  position: absolute;
+  top: 18px;
+  right: -14px;
+
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.10);
+  color: rgba(232, 238, 252, 0.92);
+
+  font-size: 14px;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(10px);
+
+  transition: transform 140ms ease, background 140ms ease, border-color 140ms ease, filter 140ms ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(99, 102, 241, 0.55);
+    transform: translateY(-1px);
+    filter: brightness(1.02);
+  }
+
+  &:active {
+    transform: translateY(0px);
+  }
+}
+
+/* 사이드바 본체 */
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  box-sizing: border-box;
+
+  padding: 18px 14px;
+  display: flex;
+  flex-direction: column;
+
+  /* 채팅 배경과 어울리게: 다크 + 살짝 오로라 */
+  background:
+    radial-gradient(700px circle at 10% 10%, rgba(99, 102, 241, 0.18), transparent 55%),
+    radial-gradient(650px circle at 90% 20%, rgba(34, 197, 94, 0.10), transparent 60%),
+    linear-gradient(180deg, rgba(14, 23, 43, 0.92) 0%, rgba(8, 10, 18, 0.95) 100%);
+
+  border-right: 1px solid rgba(255, 255, 255, 0.10);
+  color: rgba(232, 238, 252, 0.80);
+
+  /* 유리 느낌 */
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(12px);
+
+  /* 애니메이션용 */
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+/* 열렸을 때 */
+.open {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+/* 닫혔을 때 */
+.closed {
+  transform: translateX(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* 제목 영역 */
+.header {
+  font-size: 14px;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+
+  padding: 10px 10px 14px;
+  margin-bottom: 12px;
+
+  color: rgba(232, 238, 252, 0.92);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+/* 리스트 */
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* 리스트 스크롤바 */
+.list::-webkit-scrollbar {
+  width: 10px;
+}
+.list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.10);
+  border-radius: 999px;
+  border: 2px solid rgba(0, 0, 0, 0);
+  background-clip: padding-box;
+}
+.list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+/* 아이템 */
+.item {
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  cursor: pointer;
+
+  color: rgba(232, 238, 252, 0.72);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  transition: transform 140ms ease, background 140ms ease, border-color 140ms ease, color 140ms ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.14);
+    color: rgba(232, 238, 252, 0.92);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0px);
+  }
+}
+
+/* 활성화된 아이템 */
+.active {
+  border: none;
+  color: #081022;
+  background: linear-gradient(90deg, rgba(99, 102, 241, 0.95), rgba(34, 197, 94, 0.82));
+  box-shadow: 0 14px 34px rgba(99, 102, 241, 0.18);
+}
