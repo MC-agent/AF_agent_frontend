@@ -1,12 +1,12 @@
 /* sidebar.module.scss */
 
-/* »çÀÌµå¹Ù ÀüÃ¼¸¦ °¨½Î´Â wrapper */
+/* ï¿½ï¿½ï¿½Ìµï¿½ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½Î´ï¿½ wrapper */
 .wrapper {
   position: relative;
   width: 250px;
 }
 
-/* Åä±Û ¹öÆ° */
+/* ï¿½ï¿½ï¿½ ï¿½ï¿½Æ° */
 .toggleButton {
   position: absolute;
   top: 18px;
@@ -44,7 +44,7 @@
   }
 }
 
-/* »çÀÌµå¹Ù º»Ã¼ */
+/* ï¿½ï¿½ï¿½Ìµï¿½ï¿½ ï¿½ï¿½Ã¼ */
 .sidebar {
   width: 250px;
   height: 100vh;
@@ -54,7 +54,7 @@
   display: flex;
   flex-direction: column;
 
-  /* Ã¤ÆÃ ¹è°æ°ú ¾î¿ï¸®°Ô: ´ÙÅ© + »ìÂ¦ ¿À·Î¶ó */
+  /* Ã¤ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¸®ï¿½ï¿½: ï¿½ï¿½Å© + ï¿½ï¿½Â¦ ï¿½ï¿½ï¿½Î¶ï¿½ */
   background:
     radial-gradient(700px circle at 10% 10%, rgba(99, 102, 241, 0.18), transparent 55%),
     radial-gradient(650px circle at 90% 20%, rgba(34, 197, 94, 0.10), transparent 60%),
@@ -63,28 +63,28 @@
   border-right: 1px solid rgba(255, 255, 255, 0.10);
   color: rgba(232, 238, 252, 0.80);
 
-  /* À¯¸® ´À³¦ */
+  /* ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ */
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(12px);
 
-  /* ¾Ö´Ï¸ŞÀÌ¼Ç¿ë */
+  /* ï¿½Ö´Ï¸ï¿½ï¿½Ì¼Ç¿ï¿½ */
   transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
-/* ¿­·ÈÀ» ¶§ */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ */
 .open {
   transform: translateX(0);
   opacity: 1;
 }
 
-/* ´İÇûÀ» ¶§ */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ */
 .closed {
   transform: translateX(-100%);
   opacity: 0;
   pointer-events: none;
 }
 
-/* Á¦¸ñ ¿µ¿ª */
+/* ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ */
 .header {
   font-size: 14px;
   font-weight: 750;
@@ -97,7 +97,7 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.10);
 }
 
-/* ¸®½ºÆ® */
+/* ï¿½ï¿½ï¿½ï¿½Æ® */
 .list {
   list-style: none;
   padding: 0;
@@ -111,7 +111,7 @@
   flex: 1;
 }
 
-/* ¸®½ºÆ® ½ºÅ©·Ñ¹Ù */
+/* ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½Å©ï¿½Ñ¹ï¿½ */
 .list::-webkit-scrollbar {
   width: 10px;
 }
@@ -125,7 +125,7 @@
   background: rgba(255, 255, 255, 0.16);
 }
 
-/* ¾ÆÀÌÅÛ */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 .item {
   padding: 10px 12px;
   border-radius: 12px;
@@ -150,10 +150,47 @@
   }
 }
 
-/* È°¼ºÈ­µÈ ¾ÆÀÌÅÛ */
+/* È°ï¿½ï¿½È­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 .active {
   border: none;
   color: #081022;
   background: linear-gradient(90deg, rgba(99, 102, 241, 0.95), rgba(34, 197, 94, 0.82));
   box-shadow: 0 14px 34px rgba(99, 102, 241, 0.18);
+}
+
+.logoutButton {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  
+  font-size: 13px;
+  font-weight: 600;
+  
+  /* ê¸°ë³¸ ìƒíƒœ: ê¸°ì¡´ ì•„ì´í…œê³¼ ë¹„ìŠ·í•˜ê²Œ ì°¨ë¶„í•œ í†¤ */
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(232, 238, 252, 0.72);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* ì•„ì´ì½˜ê³¼ í…ìŠ¤íŠ¸ ì‚¬ì´ ê°„ê²© */
+
+  transition: all 0.2s ease;
+
+  /* í˜¸ë²„ ì‹œ: ë¡œê·¸ì•„ì›ƒ(ìœ„í—˜/ì¢…ë£Œ) ëŠë‚Œì„ ì‚´ì§ ì£¼ëŠ” ë¶‰ì€ í‹´íŠ¸ */
+  &:hover {
+    background: rgba(255, 99, 113, 0.15); /* ì‚´ì§ ë¶‰ì€ ë°°ê²½ */
+    border-color: rgba(255, 99, 113, 0.3);
+    color: rgba(255, 220, 220, 0.95);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  /* í´ë¦­ ì‹œ */
+  &:active {
+    transform: translateY(0);
+    background: rgba(255, 99, 113, 0.1);
+  }
 }

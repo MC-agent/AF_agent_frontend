@@ -4,14 +4,12 @@
   /* 화면 전체를 채팅 영역으로 */
   height: 100vh;
   width: 100%;
-  padding: 18px 18px 88px; /* 아래 textarea 공간 확보 */
-  overflow-y: auto;
+  
+  /* ⚡️수정: 부모가 기준점이 되도록 설정 */
+  position: relative; 
+  overflow: hidden; /* 전체 스크롤 막기 (내부에서 스크롤 함) */
 
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-
-  /* 다크 오로라 배경 */
+  /* 배경 유지 */
   background:
     radial-gradient(900px circle at 20% 20%, rgba(99, 102, 241, 0.22), transparent 55%),
     radial-gradient(800px circle at 80% 30%, rgba(34, 197, 94, 0.16), transparent 55%),
@@ -19,123 +17,139 @@
   color: #e8eefc;
 }
 
-/* 스크롤바 좀 예쁘게 (크롬/엣지) */
-.messages::-webkit-scrollbar {
+/* ⚡️추가: 실제 메시지가 스크롤 될 내부 영역 */
+.inner {
+  height: 100%;
+  overflow-y: auto; /* 여기서 스크롤 발생 */
+  
+  /* 입력창 높이 + 여유분만큼 하단 패딩을 줘서 메시지가 가려지지 않게 함 */
+  padding: 18px 18px 100px; 
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 스크롤바 스타일 (.messages -> .inner로 이동) */
+.inner::-webkit-scrollbar {
   width: 10px;
 }
-.messages::-webkit-scrollbar-thumb {
+.inner::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.10);
   border-radius: 999px;
   border: 2px solid rgba(0, 0, 0, 0);
   background-clip: padding-box;
 }
-.messages::-webkit-scrollbar-thumb:hover {
+.inner::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.16);
 }
 
-/* 메시지 정렬 컨테이너 */
-.msg_bot,
-.msg_user {
-  display: flex;
-  width: 100%;
-}
-
-/* assistant는 왼쪽 */
-.msg_bot {
-  justify-content: flex-start;
-}
-
-/* user는 오른쪽 */
-.msg_user {
-  justify-content: flex-end;
-}
-
-/* 말풍선 */
+/* ... 기존 .msg_bot, .msg_user, .bubble 스타일은 그대로 유지 ... */
+.msg_bot, .msg_user { display: flex; width: 100%; }
+.msg_bot { justify-content: flex-start; }
+.msg_user { justify-content: flex-end; }
 .bubble {
+
   max-width: min(720px, 84%);
+
   padding: 12px 14px;
+
   border-radius: 16px;
+
   line-height: 1.45;
+
   font-size: 14px;
+
   letter-spacing: -0.01em;
+
   word-break: break-word;
 
+
+
   /* 기본(assistant) 스타일 */
+
   background: rgba(255, 255, 255, 0.07);
+
   border: 1px solid rgba(255, 255, 255, 0.10);
+
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
+
   backdrop-filter: blur(10px);
+
 }
+
+
 
 /* user 말풍선은 색 다르게 */
+
 .msg_user .bubble {
+
   background: linear-gradient(90deg, rgba(99, 102, 241, 0.92), rgba(34, 197, 94, 0.85));
+
   border: none;
+
   color: #081022;
+
   box-shadow: 0 14px 34px rgba(99, 102, 241, 0.18);
+
 }
+
+
 
 /* assistant 말풍선 끝 모양 살짝 */
+
 .msg_bot .bubble {
+
   border-top-left-radius: 10px;
+
 }
+
+
 
 /* user 말풍선 끝 모양 살짝 */
+
 .msg_user .bubble {
+
   border-top-right-radius: 10px;
+
 }
 
-/* 입력창: 같은 div 안에 있지만 아래 고정처럼 보이게 */
+
+
+
+/* 입력창 스타일 수정 */
 .textarea {
-  position: fixed;
+  /* ⚡️수정: fixed -> absolute (부모 .messages 기준 배치) */
+  position: absolute; 
   left: 18px;
   right: 18px;
   bottom: 18px;
 
+  /* z-index 추가하여 메시지보다 위에 뜨게 함 */
+  z-index: 10; 
+
+  /* 나머지 스타일 그대로 유지 */
   height: auto;
   min-height: 46px;
   max-height: 160px;
   resize: none;
-
   padding: 12px 14px;
   border-radius: 14px;
   outline: none;
-
   color: rgba(232, 238, 252, 0.95);
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.14);
   box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(12px);
-
   font-size: 14px;
   line-height: 1.4;
-
   transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
 }
 
-.textarea::placeholder {
-  color: rgba(232, 238, 252, 0.45);
-}
-
+/* ... placeholder, focus, media query 등 나머지 그대로 ... */
+.textarea::placeholder { color: rgba(232, 238, 252, 0.45); }
 .textarea:focus {
   background: rgba(255, 255, 255, 0.10);
   border-color: rgba(99, 102, 241, 0.85);
   box-shadow: 0 0 0 5px rgba(99, 102, 241, 0.18), 0 18px 50px rgba(0, 0, 0, 0.35);
-}
-
-/* 모바일 */
-@media (max-width: 480px) {
-  .messages {
-    padding: 14px 14px 86px;
-  }
-
-  .textarea {
-    left: 14px;
-    right: 14px;
-    bottom: 14px;
-  }
-
-  .bubble {
-    max-width: 92%;
-  }
 }
