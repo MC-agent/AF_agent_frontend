@@ -1,84 +1,118 @@
 "use client";
 
-
-import {useState} from "react";
-import styles from "../styles/login/page.module.scss";
+import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { useMutation,QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, useMutation } from "@tanstack/react-query";
+import styles from "./page.module.scss";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
-function Login_Process(){
-    const [email,setEmail] = useState("");
-    const [password,setPassword] = useState("");
-    const router = useRouter();
+const BASE_URL = "http://localhost:8000";
 
-    const HandleOnLogin = async ({email,password}) =>{
-        try {
-
-            const data = {"email":email,
-                        "password":password}
-            const res = await fetch(`${BASE_URL}/api/auth/login`,{
-                method: 'POST',
-                headers: {'Content-Type':"application/json"},
-                body: JSON.stringify(data)
-            
-            }
-            )
-            
-            return res.json();
-        } catch (error) {
-            throw new Error("Failed to fetch data");
-    }
-    };
-
-
-
-    const loginMutation = useMutation({
-        mutationFn: HandleOnLogin,
-        onSuccess: (data) => {
-            if(data.access_token){
-                router.push("/chat");
-            }
-        },
-        onError: (error)=>{
-
-            alert(error.message);
-        }
-    });
-    const handleSubmit = (e) => {
-        e.preventDefault(); // 새로고침 방지
-        loginMutation.mutate({ email, password }); // 실제 API 요청 트리거
-    };
-    return(
-        <div className={styles.loginContainer}>
-            <form className={styles.loginForm} onSubmit={(e) =>handleSubmit(e)}> 
-                <div className={styles.inputGroup}>
-                    <label>Username: <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} /> </label>
-                </div>
-                <div className={styles.inputGroup}>
-                    <label>Password:<input type="password" value={password} onChange={(e) => setPassword(e.target.value)} /> </label>
-                </div>
-                <div className={styles.buttonGroup}>
-                    <button type="submit" disabled={loginMutation.isPending}>
-                        {loginMutation.isPending ? "Logging in..." : "Login"}
-                    </button>
-                    <button type="button" onClick={() => router.push("/assign")}>
-                        Sign up
-                    </button>
-                </div>
-            </form>
-        </div>
-    )
+type LoginParams = {
+  email: string;
+  password: string;
 };
+
+type LoginResponse = {
+  access_token?: string;
+  token_type?: string;
+  detail?: string;
+};
+
+function LoginProcess() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const router = useRouter();
+
+  const handleOnLogin = async ({
+    email,
+    password,
+  }: LoginParams): Promise<LoginResponse> => {
+    try {
+      const data = {
+        email,
+        password,
+      };
+
+      const res = await fetch(`${BASE_URL}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (!res.ok) {
+        throw new Error("Login failed");
+      }
+
+      return res.json();
+    } catch (error) {
+      throw new Error("Failed to fetch data");
+    }
+  };
+
+  const loginMutation = useMutation<LoginResponse, Error, LoginParams>({
+    mutationFn: handleOnLogin,
+    onSuccess: (data) => {
+      if (data.access_token) {
+        router.push("/chat");
+      } else {
+        alert("Login failed");
+      }
+    },
+    onError: (error) => {
+      alert(error.message);
+    },
+  });
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    loginMutation.mutate({ email, password });
+  };
+
+  return (
+    <div className={styles.loginContainer}>
+      <form className={styles.loginForm} onSubmit={handleSubmit}>
+        <div className={styles.inputGroup}>
+          <label>
+            Username:
+            <input
+              type="text"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </label>
+        </div>
+
+        <div className={styles.inputGroup}>
+          <label>
+            Password:
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </label>
+        </div>
+
+        <div className={styles.buttonGroup}>
+          <button type="submit" disabled={loginMutation.isPending}>
+            {loginMutation.isPending ? "Logging in..." : "Login"}
+          </button>
+
+          <button type="button" onClick={() => router.push("/assign")}>
+            Sign up
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
 
 const queryClient = new QueryClient();
 
-export default function App(){
-return(
-
+export default function App() {
+  return (
     <QueryClientProvider client={queryClient}>
-        <Login_Process />
+      <LoginProcess />
     </QueryClientProvider>
-);
-
+  );
 }
