@@ -3,7 +3,7 @@
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { QueryClient, QueryClientProvider, useMutation } from "@tanstack/react-query";
-import styles from "./page.module.scss";
+import styles from "../styles/login/page.module.scss";
 
 const BASE_URL = "http://localhost:8000";
 
