@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { QueryClient, QueryClientProvider, useMutation } from "@tanstack/react-query";
 import styles from "../styles/login/page.module.scss";
 
-const BASE_URL = "http://localhost:8000";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 type LoginParams = {
   email: string;
