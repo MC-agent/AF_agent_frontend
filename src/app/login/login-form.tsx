@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { QueryClient, QueryClientProvider, useMutation } from "@tanstack/react-query";
 import styles from "../styles/login/page.module.scss";
 import { persistAuthToken } from "@/lib/auth";
+import { throwApiError } from "@/lib/api-error";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -19,9 +20,21 @@ type LoginResponse = {
   detail?: string;
 };
 
+const errorMessageStyle = {
+  whiteSpace: "pre-line" as const,
+  padding: "12px 14px",
+  borderRadius: "12px",
+  background: "rgba(248, 113, 113, 0.12)",
+  border: "1px solid rgba(248, 113, 113, 0.28)",
+  color: "#fecaca",
+  fontSize: "13px",
+  lineHeight: 1.5,
+};
+
 function LoginProcess() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [formError, setFormError] = useState("");
   const router = useRouter();
 
   const handleOnLogin = async ({
@@ -36,7 +49,7 @@ function LoginProcess() {
     });
 
     if (!res.ok) {
-      throw new Error("Login failed");
+      await throwApiError(res, "로그인에 실패했습니다.");
     }
 
     return res.json();
@@ -45,8 +58,10 @@ function LoginProcess() {
   const loginMutation = useMutation<LoginResponse, Error, LoginParams>({
     mutationFn: handleOnLogin,
     onSuccess: (data) => {
+      setFormError("");
+
       if (!data.access_token) {
-        alert("Login failed");
+        setFormError("로그인 응답에 access token 이 없습니다.");
         return;
       }
 
@@ -54,12 +69,13 @@ function LoginProcess() {
       router.replace("/chat");
     },
     onError: (error) => {
-      alert(error.message);
+      setFormError(error.message);
     },
   });
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setFormError("");
     loginMutation.mutate({ email, password });
   };
 
@@ -72,7 +88,10 @@ function LoginProcess() {
             <input
               type="text"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setFormError("");
+              }}
             />
           </label>
         </div>
@@ -83,10 +102,15 @@ function LoginProcess() {
             <input
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setFormError("");
+              }}
             />
           </label>
         </div>
+
+        {formError ? <div style={errorMessageStyle}>{formError}</div> : null}
 
         <div className={styles.buttonGroup}>
           <button type="submit" disabled={loginMutation.isPending}>

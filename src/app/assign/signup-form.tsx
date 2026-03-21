@@ -8,6 +8,7 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 import styles from "../styles/assign/page.module.scss";
+import { throwApiError } from "@/lib/api-error";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -22,12 +23,25 @@ type SignupResponse = {
   detail?: string;
 };
 
+const errorMessageStyle = {
+  whiteSpace: "pre-line" as const,
+  padding: "12px 14px",
+  borderRadius: "12px",
+  background: "rgba(248, 113, 113, 0.12)",
+  border: "1px solid rgba(248, 113, 113, 0.28)",
+  color: "#fecaca",
+  fontSize: "13px",
+  lineHeight: 1.5,
+};
+
 function Authentication() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [repassword, setRePassword] = useState("");
   const [email, setEmail] = useState("");
+  const [formError, setFormError] = useState("");
   const isPasswordMatch = password === repassword;
+  const visibleError = !isPasswordMatch ? "비밀번호가 일치하지 않습니다" : formError;
 
   const router = useRouter();
 
@@ -52,7 +66,7 @@ function Authentication() {
     });
 
     if (!res.ok) {
-      throw new Error("회원가입 요청에 실패했습니다.");
+      await throwApiError(res, "회원가입 요청에 실패했습니다.");
     }
 
     return res.json();
@@ -61,15 +75,17 @@ function Authentication() {
   const loginMutation = useMutation<SignupResponse, Error, SignupParams>({
     mutationFn: handleOnAuth,
     onSuccess: () => {
+      setFormError("");
       router.push("/login");
     },
     onError: (error) => {
-      alert(error.message);
+      setFormError(error.message);
     },
   });
 
   const handleOnSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setFormError("");
     loginMutation.mutate({
       email,
       password,
@@ -85,7 +101,10 @@ function Authentication() {
           <input
             type="text"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setFormError("");
+            }}
           />
         </div>
 
@@ -94,7 +113,10 @@ function Authentication() {
           <input
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              setFormError("");
+            }}
           />
         </div>
 
@@ -103,18 +125,24 @@ function Authentication() {
           <input
             type="password"
             value={repassword}
-            onChange={(e) => setRePassword(e.target.value)}
+            onChange={(e) => {
+              setRePassword(e.target.value);
+              setFormError("");
+            }}
           />
         </div>
 
-        <div>{isPasswordMatch ? "" : "비밀번호가 일치하지 않습니다"}</div>
+        {visibleError ? <div style={errorMessageStyle}>{visibleError}</div> : null}
 
         <div className={styles.email}>
           <label>Username:</label>
           <input
             type="text"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e) => {
+              setUsername(e.target.value);
+              setFormError("");
+            }}
           />
         </div>
 
