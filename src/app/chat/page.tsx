@@ -1,19 +1,21 @@
-"use client";
+import type { Metadata } from "next";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import ChatShell from "./chat-shell";
+import { AUTH_COOKIE_NAME } from "@/lib/auth";
 
-import Chat from "./chatting";
-import SideBarFunction from "./sidebar";
-import {useMutation, QueryClient, QueryClientProvider} from '@tanstack/react-query';
+export const metadata: Metadata = {
+  title: "채팅",
+  description: "AF Agent Frontend 채팅 페이지입니다.",
+};
 
+export default async function ChatPage() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(AUTH_COOKIE_NAME)?.value;
 
-const queryClient = new QueryClient;
-export default function Main() {
+  if (!token) {
+    redirect("/login");
+  }
 
-  return (
-    <div style={{ display: "flex" }}>
-      <QueryClientProvider client={queryClient}>
-        <SideBarFunction />
-        <Chat />
-      </QueryClientProvider>
-    </div>
-  );
+  return <ChatShell />;
 }

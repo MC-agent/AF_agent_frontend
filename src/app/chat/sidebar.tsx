@@ -3,6 +3,13 @@
 import { useState, useEffect } from "react";
 import styles from "../styles/chat/sidebar.module.scss";
 import { useRouter } from "next/navigation";
+import {
+  AuthUser,
+  buildAuthHeaders,
+  clearAuthToken,
+  fetchCurrentUser,
+  getAuthToken,
+} from "@/lib/auth";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -34,12 +41,18 @@ type Msg = {
 export default function SideBarFunction() {
   const [open, setOpen] = useState(true);
   const [messages, setMessages] = useState<Msg[]>([]);
+  const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
+  const [userLoading, setUserLoading] = useState(true);
   const router = useRouter();
 
-  const getChatInfo = async () => {
+  const getChatInfo = async (token: string) => {
     const res = await fetch(`${BASE_URL}/api/chats`, {
       method: "GET",
-      // headers: { Authorization: `Bearer ${access_token}` }
+      headers: {
+        Accept: "application/json",
+        ...buildAuthHeaders(token),
+      },
+      credentials: "include",
     });
 
     if (!res.ok) {
@@ -53,12 +66,37 @@ export default function SideBarFunction() {
   };
 
   useEffect(() => {
-    // void getChatInfo();
-    setMessages(MOCKDATA);
-  }, []);
+    const token = getAuthToken();
+
+    if (!token) {
+      router.replace("/login");
+      return;
+    }
+
+    const bootstrap = async () => {
+      try {
+        const user = await fetchCurrentUser(token);
+        setCurrentUser(user);
+
+        try {
+          await getChatInfo(token);
+        } catch {
+          setMessages(MOCKDATA);
+        }
+      } catch {
+        clearAuthToken();
+        router.replace("/login");
+      } finally {
+        setUserLoading(false);
+      }
+    };
+
+    void bootstrap();
+  }, [router]);
 
   const handleOnLogout = () => {
-    router.push("/login");
+    clearAuthToken();
+    router.replace("/login");
   };
 
   return (
@@ -74,6 +112,16 @@ export default function SideBarFunction() {
         className={`${styles.sidebar} ${open ? styles.open : styles.closed}`}
       >
         <div className={styles.header}>Chat Rooms</div>
+
+        <div className={styles.userCard}>
+          <div className={styles.userLabel}>Signed in</div>
+          <div className={styles.userName}>
+            {userLoading ? "사용자 정보 불러오는 중..." : currentUser?.name || "이름 없음"}
+          </div>
+          <div className={styles.userEmail}>
+            {userLoading ? "" : currentUser?.email || "이메일 없음"}
+          </div>
+        </div>
 
         <div className={styles.list}>
           {messages.map((m) => (

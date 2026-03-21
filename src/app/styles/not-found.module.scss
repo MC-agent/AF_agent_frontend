@@ -1,0 +1,101 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  background:
+    radial-gradient(900px circle at 15% 15%, rgba(99, 102, 241, 0.26), transparent 48%),
+    radial-gradient(700px circle at 80% 30%, rgba(34, 197, 94, 0.18), transparent 45%),
+    linear-gradient(180deg, #0b1220 0%, #060913 100%);
+}
+
+.panel {
+  width: min(760px, 100%);
+  padding: 36px;
+  border-radius: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.34);
+  backdrop-filter: blur(14px);
+  color: #edf2ff;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(237, 242, 255, 0.76);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.code {
+  margin-top: 20px;
+  font-size: clamp(64px, 14vw, 132px);
+  font-weight: 900;
+  line-height: 0.95;
+  color: #f8fbff;
+}
+
+.title {
+  margin-top: 10px;
+  font-size: clamp(28px, 5vw, 46px);
+  font-weight: 800;
+  line-height: 1.08;
+}
+
+.description {
+  margin-top: 18px;
+  max-width: 560px;
+  color: rgba(237, 242, 255, 0.72);
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.primaryButton,
+.secondaryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 20px;
+  border-radius: 999px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 160ms ease, opacity 160ms ease, border-color 160ms ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    opacity: 0.95;
+  }
+}
+
+.primaryButton {
+  color: #06101f;
+  background: linear-gradient(90deg, rgba(99, 102, 241, 0.96), rgba(34, 197, 94, 0.86));
+}
+
+.secondaryButton {
+  color: #edf2ff;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.note {
+  margin-top: 22px;
+  color: rgba(237, 242, 255, 0.56);
+  font-size: 13px;
+  letter-spacing: -0.01em;
+}

@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, KeyboardEvent } from "react";
 import styles from "../styles/chat/chatting.module.scss";
+import { buildAuthHeaders, getAuthToken } from "@/lib/auth";
 
 type Msg = {
   id: string;
@@ -29,6 +30,8 @@ export default function Chat() {
 
   const sendMessage = async () => {
     const text = value.trim();
+    const token = getAuthToken();
+
     if (!text || loading) return;
 
     setMessages((prev) => [
@@ -44,7 +47,9 @@ export default function Chat() {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
+          ...buildAuthHeaders(token),
         },
+        credentials: "include",
         body: JSON.stringify({ content: text }),
       });
 
