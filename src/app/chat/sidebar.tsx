@@ -1,98 +1,61 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import styles from "../styles/chat/sidebar.module.scss";
 import { useRouter } from "next/navigation";
-import {
-  AuthUser,
-  buildAuthHeaders,
-  clearAuthToken,
-  fetchCurrentUser,
-  getAuthToken,
-} from "@/lib/auth";
+import { clearAuthToken, type AuthUser } from "@/lib/auth";
+import { type ChatSummary } from "@/lib/chat";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
-
-const MOCKDATA = [
-  {
-    id: 2,
-    user_id: 1,
-    title: "제주도 숙소 추천",
-    created_at: "2024-01-05T10:00:00",
-    updated_at: "2024-01-05T11:30:00",
-  },
-  {
-    id: 1,
-    user_id: 1,
-    title: "강남 맛집 추천",
-    created_at: "2024-01-04T12:00:00",
-    updated_at: "2024-01-04T14:00:00",
-  },
-];
-
-type Msg = {
-  id: number;
-  user_id: number;
-  title: string;
-  created_at: string;
-  updated_at: string;
+type SidebarProps = {
+  chats: ChatSummary[];
+  selectedChatId: number | null;
+  currentUser: AuthUser | null;
+  userLoading: boolean;
+  chatListLoading: boolean;
+  creatingChat: boolean;
+  onSelectChat: (chatId: number) => void;
+  onCreateChat: () => void;
 };
 
-export default function SideBarFunction() {
-  const [open, setOpen] = useState(true);
-  const [messages, setMessages] = useState<Msg[]>([]);
-  const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
-  const [userLoading, setUserLoading] = useState(true);
+const createButtonStyle = {
+  width: "100%",
+  marginBottom: "12px",
+  padding: "12px",
+  borderRadius: "12px",
+  border: "none",
+  cursor: "pointer",
+  fontSize: "13px",
+  fontWeight: 700,
+  color: "#081022",
+  background: "linear-gradient(90deg, rgba(99, 102, 241, 0.95), rgba(34, 197, 94, 0.82))",
+  boxShadow: "0 14px 34px rgba(99, 102, 241, 0.18)",
+};
+
+const chatButtonReset = {
+  width: "100%",
+  textAlign: "left" as const,
+};
+
+const emptyStateStyle = {
+  padding: "16px 12px",
+  borderRadius: "12px",
+  fontSize: "13px",
+  lineHeight: 1.5,
+  color: "rgba(232, 238, 252, 0.66)",
+  background: "rgba(255, 255, 255, 0.04)",
+  border: "1px solid rgba(255, 255, 255, 0.08)",
+};
+
+export default function SideBarFunction({
+  chats,
+  selectedChatId,
+  currentUser,
+  userLoading,
+  chatListLoading,
+  creatingChat,
+  onSelectChat,
+  onCreateChat,
+}: SidebarProps) {
   const router = useRouter();
-
-  const getChatInfo = async (token: string) => {
-    const res = await fetch(`${BASE_URL}/api/chats`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        ...buildAuthHeaders(token),
-      },
-      credentials: "include",
-    });
-
-    if (!res.ok) {
-      throw new Error("채팅 목록을 불러오는데 실패했습니다.");
-    }
-
-    const data: Msg[] = await res.json();
-    setMessages(data);
-
-    return data;
-  };
-
-  useEffect(() => {
-    const token = getAuthToken();
-
-    if (!token) {
-      router.replace("/login");
-      return;
-    }
-
-    const bootstrap = async () => {
-      try {
-        const user = await fetchCurrentUser(token);
-        setCurrentUser(user);
-
-        try {
-          await getChatInfo(token);
-        } catch {
-          setMessages(MOCKDATA);
-        }
-      } catch {
-        clearAuthToken();
-        router.replace("/login");
-      } finally {
-        setUserLoading(false);
-      }
-    };
-
-    void bootstrap();
-  }, [router]);
 
   const handleOnLogout = () => {
     clearAuthToken();
@@ -101,16 +64,7 @@ export default function SideBarFunction() {
 
   return (
     <div className={styles.wrapper}>
-      <button
-        className={styles.toggleButton}
-        onClick={() => setOpen((prev) => !prev)}
-      >
-        {open ? "⟨" : "⟩"}
-      </button>
-
-      <aside
-        className={`${styles.sidebar} ${open ? styles.open : styles.closed}`}
-      >
+      <aside className={`${styles.sidebar} ${styles.open}`}>
         <div className={styles.header}>Chat Rooms</div>
 
         <div className={styles.userCard}>
@@ -123,11 +77,38 @@ export default function SideBarFunction() {
           </div>
         </div>
 
+        <button
+          type="button"
+          style={createButtonStyle}
+          onClick={onCreateChat}
+          disabled={creatingChat}
+        >
+          {creatingChat ? "채팅 만드는 중..." : "+ 새 채팅"}
+        </button>
+
         <div className={styles.list}>
-          {messages.map((m) => (
-            <li key={m.id} className={styles.item}>
-              {m.title}
-            </li>
+          {chatListLoading ? (
+            <div style={emptyStateStyle}>채팅 목록을 불러오는 중입니다.</div>
+          ) : null}
+
+          {!chatListLoading && chats.length === 0 ? (
+            <div style={emptyStateStyle}>
+              아직 생성된 채팅이 없습니다.
+              <br />
+              새 채팅을 만들어 대화를 시작해 보세요.
+            </div>
+          ) : null}
+
+          {chats.map((chat) => (
+            <button
+              key={chat.id}
+              type="button"
+              className={`${styles.item} ${selectedChatId === chat.id ? styles.active : ""}`}
+              style={chatButtonReset}
+              onClick={() => onSelectChat(chat.id)}
+            >
+              {chat.title}
+            </button>
           ))}
         </div>
 
