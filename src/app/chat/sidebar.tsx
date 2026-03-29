@@ -2,6 +2,7 @@
 
 import styles from "../styles/chat/sidebar.module.scss";
 import { useRouter } from "next/navigation";
+import { MouseEvent, useState } from "react";
 import { clearAuthToken, type AuthUser } from "@/lib/auth";
 import { type ChatSummary } from "@/lib/chat";
 
@@ -12,8 +13,10 @@ type SidebarProps = {
   userLoading: boolean;
   chatListLoading: boolean;
   creatingChat: boolean;
+  deletingChatId: number | null;
   onSelectChat: (chatId: number) => void;
   onCreateChat: () => void;
+  onDeleteChat: (chatId: number) => Promise<void> | void;
 };
 
 const createButtonStyle = {
@@ -52,14 +55,35 @@ export default function SideBarFunction({
   userLoading,
   chatListLoading,
   creatingChat,
+  deletingChatId,
   onSelectChat,
   onCreateChat,
+  onDeleteChat,
 }: SidebarProps) {
   const router = useRouter();
+  const [pendingDeleteChat, setPendingDeleteChat] = useState<ChatSummary | null>(null);
 
   const handleOnLogout = async () => {
     await clearAuthToken();
     router.replace("/login");
+  };
+
+  const handleDelete = async (event: MouseEvent<HTMLButtonElement>, chatId: number) => {
+    event.stopPropagation();
+    const targetChat = chats.find((chat) => chat.id === chatId) ?? null;
+    setPendingDeleteChat(targetChat);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!pendingDeleteChat) {
+      return;
+    }
+    await onDeleteChat(pendingDeleteChat.id);
+    setPendingDeleteChat(null);
+  };
+
+  const handleCancelDelete = () => {
+    setPendingDeleteChat(null);
   };
 
   return (
@@ -100,15 +124,29 @@ export default function SideBarFunction({
           ) : null}
 
           {chats.map((chat) => (
-            <button
+            <div
               key={chat.id}
-              type="button"
-              className={`${styles.item} ${selectedChatId === chat.id ? styles.active : ""}`}
-              style={chatButtonReset}
-              onClick={() => onSelectChat(chat.id)}
+              className={`${styles.itemRow} ${selectedChatId === chat.id ? styles.activeRow : ""}`}
             >
-              {chat.title}
-            </button>
+              <button
+                type="button"
+                className={`${styles.item} ${selectedChatId === chat.id ? styles.active : ""}`}
+                style={chatButtonReset}
+                onClick={() => onSelectChat(chat.id)}
+              >
+                <span className={styles.itemTitle}>{chat.title}</span>
+              </button>
+              <button
+                type="button"
+                className={styles.deleteButton}
+                onClick={(event) => void handleDelete(event, chat.id)}
+                disabled={deletingChatId === chat.id}
+                aria-label={`${chat.title} 삭제`}
+                title="채팅 삭제"
+              >
+                {deletingChatId === chat.id ? "..." : "×"}
+              </button>
+            </div>
           ))}
         </div>
 
@@ -118,6 +156,41 @@ export default function SideBarFunction({
           </button>
         </div>
       </aside>
+
+      {pendingDeleteChat ? (
+        <div className={styles.modalBackdrop} role="presentation" onClick={handleCancelDelete}>
+          <div
+            className={styles.modalCard}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-chat-title"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className={styles.modalEyebrow}>Delete chat</div>
+            <h3 id="delete-chat-title" className={styles.modalTitle}>
+              이 채팅을 삭제할까요?
+            </h3>
+            <p className={styles.modalBody}>
+              <strong>{pendingDeleteChat.title}</strong>
+              <br />
+              삭제하면 이 채팅과 메시지를 다시 불러올 수 없습니다.
+            </p>
+            <div className={styles.modalActions}>
+              <button type="button" className={styles.modalCancel} onClick={handleCancelDelete}>
+                취소
+              </button>
+              <button
+                type="button"
+                className={styles.modalDelete}
+                onClick={() => void handleConfirmDelete()}
+                disabled={deletingChatId === pendingDeleteChat.id}
+              >
+                {deletingChatId === pendingDeleteChat.id ? "삭제 중..." : "삭제"}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

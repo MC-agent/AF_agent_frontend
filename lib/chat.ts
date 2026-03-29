@@ -63,6 +63,25 @@ export async function createChat(token: string) {
   return (await response.json()) as ChatSummary;
 }
 
+export async function deleteChat(chatId: number, token: string) {
+  const response = await fetch(`${BASE_URL}/api/chats/${chatId}`, {
+    method: "DELETE",
+    headers: getHeaders(token),
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    await throwApiError(response, "채팅을 삭제하지 못했습니다.");
+  }
+
+  const contentType = response.headers.get("content-type") || "";
+  if (contentType.includes("application/json")) {
+    return response.json();
+  }
+
+  return null;
+}
+
 export async function fetchChatMessages(chatId: number, token: string) {
   const response = await fetch(`${BASE_URL}/api/chats/${chatId}/messages`, {
     method: "GET",

@@ -7,6 +7,7 @@ import SideBarFunction from "./sidebar";
 import { clearAuthToken, fetchCurrentUser, getAuthToken, type AuthUser } from "@/lib/auth";
 import {
   createChat,
+  deleteChat,
   fetchChatMessages,
   fetchChats,
   sendChatMessage,
@@ -31,6 +32,7 @@ export default function ChatShell() {
   const [chatListLoading, setChatListLoading] = useState(true);
   const [messageLoading, setMessageLoading] = useState(false);
   const [creatingChat, setCreatingChat] = useState(false);
+  const [deletingChatId, setDeletingChatId] = useState<number | null>(null);
   const [sendingMessage, setSendingMessage] = useState(false);
   const [chats, setChats] = useState<ChatSummary[]>([]);
   const [selectedChatId, setSelectedChatId] = useState<number | null>(null);
@@ -130,6 +132,38 @@ export default function ChatShell() {
     }
   };
 
+  const handleDeleteChat = async (chatId: number) => {
+    try {
+      setDeletingChatId(chatId);
+      setChatError("");
+
+      const token = await ensureToken();
+      await deleteChat(chatId, token);
+      const updatedChats = await refreshChatList(token);
+
+      if (updatedChats.length === 0) {
+        setSelectedChatId(null);
+        setMessages([]);
+        return;
+      }
+
+      if (selectedChatId === chatId) {
+        await loadChatMessages(updatedChats[0].id, token);
+        return;
+      }
+
+      if (!updatedChats.some((chat) => chat.id === selectedChatId)) {
+        await loadChatMessages(updatedChats[0].id, token);
+      }
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "채팅을 삭제하지 못했습니다.";
+      setChatError(message);
+    } finally {
+      setDeletingChatId(null);
+    }
+  };
+
   const handleSendMessage = async (content: string) => {
     const trimmed = content.trim();
 
@@ -197,8 +231,10 @@ export default function ChatShell() {
         userLoading={userLoading}
         chatListLoading={chatListLoading}
         creatingChat={creatingChat}
+        deletingChatId={deletingChatId}
         onSelectChat={handleSelectChat}
         onCreateChat={handleCreateChat}
+        onDeleteChat={handleDeleteChat}
       />
       <Chat
         chatTitle={selectedChat?.title ?? null}
