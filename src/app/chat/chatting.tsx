@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import styles from "../styles/chat/chatting.module.scss";
 import { type ChatMessage } from "@/lib/chat";
 
@@ -141,9 +143,30 @@ export default function Chat({
               key={message.id}
               className={message.role === "assistant" ? styles.msg_bot : styles.msg_user}
             >
-              <div className={styles.bubble}>{message.content}</div>
+              <div className={styles.bubble}>
+                {message.role === "assistant" ? (
+                  <div className={styles.bubbleMarkdown}>
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.content}</ReactMarkdown>
+                  </div>
+                ) : (
+                  <div className={styles.bubbleText}>{message.content}</div>
+                )}
+              </div>
             </div>
           ))}
+
+        {sending ? (
+          <div className={styles.msg_bot}>
+            <div className={`${styles.bubble} ${styles.loadingBubble}`}>
+              <div className={styles.loadingLabel}>답변 작성 중</div>
+              <div className={styles.typingDots} aria-label="답변 생성 중">
+                <span />
+                <span />
+                <span />
+              </div>
+            </div>
+          </div>
+        ) : null}
 
         <div ref={endRef} />
       </div>

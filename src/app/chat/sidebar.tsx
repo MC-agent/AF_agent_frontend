@@ -57,8 +57,8 @@ export default function SideBarFunction({
 }: SidebarProps) {
   const router = useRouter();
 
-  const handleOnLogout = () => {
-    clearAuthToken();
+  const handleOnLogout = async () => {
+    await clearAuthToken();
     router.replace("/login");
   };
 

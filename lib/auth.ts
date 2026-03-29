@@ -1,5 +1,4 @@
 export const AUTH_COOKIE_NAME = "af_agent_access_token";
-export const AUTH_STORAGE_KEY = "af_agent_access_token";
 const AUTH_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -27,24 +26,39 @@ export const getAuthToken = () => {
     return null;
   }
 
-  return localStorage.getItem(AUTH_STORAGE_KEY) ?? readCookie(AUTH_COOKIE_NAME);
+  return readCookie(AUTH_COOKIE_NAME);
 };
 
-export const persistAuthToken = (token: string) => {
+export const persistAuthToken = async (token: string) => {
   if (typeof window === "undefined") {
     return;
   }
 
-  localStorage.setItem(AUTH_STORAGE_KEY, token);
+  const response = await fetch("/api/session", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ token }),
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error("세션 쿠키를 저장하지 못했습니다.");
+  }
+
   document.cookie = `${AUTH_COOKIE_NAME}=${encodeURIComponent(token)}; Path=/; Max-Age=${AUTH_COOKIE_MAX_AGE}; SameSite=Lax`;
 };
 
-export const clearAuthToken = () => {
+export const clearAuthToken = async () => {
   if (typeof window === "undefined") {
     return;
   }
 
-  localStorage.removeItem(AUTH_STORAGE_KEY);
+  await fetch("/api/session", {
+    method: "DELETE",
+    credentials: "include",
+  });
   document.cookie = `${AUTH_COOKIE_NAME}=; Path=/; Max-Age=0; SameSite=Lax`;
 };
 

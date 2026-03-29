@@ -80,7 +80,7 @@ export default function ChatShell() {
           error instanceof Error ? error.message : "채팅 화면을 불러오지 못했습니다.";
 
         if (message.includes("로그인")) {
-          clearAuthToken();
+          await clearAuthToken();
           router.replace("/login");
           return;
         }

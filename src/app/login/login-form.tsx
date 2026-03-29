@@ -57,7 +57,7 @@ function LoginProcess() {
 
   const loginMutation = useMutation<LoginResponse, Error, LoginParams>({
     mutationFn: handleOnLogin,
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       setFormError("");
 
       if (!data.access_token) {
@@ -65,7 +65,7 @@ function LoginProcess() {
         return;
       }
 
-      persistAuthToken(data.access_token);
+      await persistAuthToken(data.access_token);
       router.replace("/chat");
     },
     onError: (error) => {
